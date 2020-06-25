@@ -1,4 +1,4 @@
-const database = require('./database');
+// const database = require('./database'); // the old database.js
 const apiRoutes = require('./apiRoutes');
 const userRoutes = require('./userRoutes');
 
@@ -9,6 +9,12 @@ const cookieSession = require('cookie-session');
 const bodyParser = require('body-parser');
 
 const app = express();
+
+const pool = require('./dbConnect');
+const usersHelper = require('./db/usersHelper')(pool);
+const reservationsPropertiesHelper = require('./db/reservationsPropertiesHelper.js')(
+  pool
+);
 
 app.use(
   cookieSession({
@@ -22,12 +28,12 @@ app.use(bodyParser.json());
 
 // /api/endpoints
 const apiRouter = express.Router();
-apiRoutes(apiRouter, database);
+apiRoutes(apiRouter, reservationsPropertiesHelper);
 app.use('/api', apiRouter);
 
 // /user/endpoints
 const userRouter = express.Router();
-userRoutes(userRouter, database);
+userRoutes(userRouter, usersHelper);
 app.use('/users', userRouter);
 
 app.use(express.static(path.join(__dirname, '../public')));
