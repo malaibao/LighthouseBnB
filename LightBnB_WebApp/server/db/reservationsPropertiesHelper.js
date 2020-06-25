@@ -1,6 +1,6 @@
-/// Reservations & Properties
-
+const { getPropertiesQueryStr } = require('./getPropertiesQueryStr');
 const reservationsPropertiesHelper = (pool) => {
+  /// Reservation
   /**
    * Get all reservations for a single user.
    * @param {string} guest_id The id of the user.
@@ -24,7 +24,6 @@ const reservationsPropertiesHelper = (pool) => {
   };
 
   /// Properties
-
   /**
    * Get all properties.
    * @param {{}} options An object containing query options.
@@ -32,69 +31,11 @@ const reservationsPropertiesHelper = (pool) => {
    * @return {Promise<[{}]>}  A promise to the properties.
    */
   const getAllProperties = function (options, limit = 10) {
-    const queryVal = [];
-    let queryStr = `
-    SELECT properties.*, avg(property_reviews.rating) as average_rating
-    FROM properties
-    LEFT JOIN property_reviews ON properties.id = property_id`;
+    const queryObj = getPropertiesQueryStr(options, limit); // from getPropertiesQueryStr.js
 
-    // Check if options obj contains city
-    if (options.city) {
-      queryVal.push(`%${options.city}%`);
-      queryStr += `WHERE city LIKE $${queryVal.length} `;
-    }
-
-    // Check if option obj contains owner_id
-    if (options.owner_id) {
-      queryVal.push(options.owner_id);
-      if (queryStr.includes('WHERE')) {
-        queryStr += `AND properties.owner_id=$${queryVal.length}`;
-      } else {
-        queryStr += `
-    WHERE properties.owner_id=$${queryVal.length}`;
-      }
-    }
-
-    // Check if option obj contains minimum_price_night and maximum_price_night
-    if (options.minimum_price_per_night && options.maximum_price_per_night) {
-      queryVal.push(
-        options.minimum_price_per_night,
-        options.maximum_price_per_night
-      );
-      if (queryStr.includes('WHERE')) {
-        queryStr += `AND properties.cost_per_night BETWEEN $${
-          queryVal.length - 1
-        } AND $${queryVal.length}`;
-      } else {
-        queryStr += `
-        WHERE properties.cost_per_night BETWEEN $${queryVal.length - 1} AND $${
-          queryVal.length
-        }`;
-      }
-    }
-
-    // add the GROUP BY clause
-    queryStr += `
-    GROUP BY properties.id`;
-
-    // Check if options obj contains minimum rating
-    if (options.minimum_rating) {
-      queryVal.push(options.minimum_rating);
-      queryStr += `
-    HAVING avg(property_reviews.rating) >= $${queryVal.length}`;
-    }
-
-    // Push limit
-    queryVal.push(limit);
-    queryStr += `
-    ORDER BY cost_per_night
-    LIMIT $${queryVal.length};
-    `;
-
-    console.log(queryStr);
-    console.log(queryVal);
-
-    return pool.query(queryStr, queryVal).then((dbRes) => dbRes.rows);
+    return pool
+      .query(queryObj.queryStr, queryObj.queryVal)
+      .then((dbRes) => dbRes.rows);
   };
 
   /**
