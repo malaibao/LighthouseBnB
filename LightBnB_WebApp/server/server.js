@@ -1,6 +1,6 @@
 // const database = require('./database'); // the old database.js
-const apiRoutes = require('./apiRoutes');
-const userRoutes = require('./userRoutes');
+const apiRoutes = require('./routes/apiRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 const path = require('path');
 
@@ -10,6 +10,7 @@ const bodyParser = require('body-parser');
 
 const app = express();
 
+// db config
 const pool = require('./dbConnect');
 const usersHelper = require('./db/usersHelper')(pool);
 const reservationsPropertiesHelper = require('./db/reservationsPropertiesHelper.js')(
