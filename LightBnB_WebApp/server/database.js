@@ -1,6 +1,4 @@
 const { Pool } = require('pg');
-const properties = require('./json/properties.json');
-const users = require('./json/users.json');
 require('dotenv').config();
 
 const pool = new Pool({
@@ -95,7 +93,7 @@ const getAllProperties = function (options, limit = 10) {
   let queryStr = `
   SELECT properties.*, avg(property_reviews.rating) as average_rating
   FROM properties
-  JOIN property_reviews ON properties.id = property_id`;
+  LEFT JOIN property_reviews ON properties.id = property_id`;
 
   // Check if options obj contains city
   if (options.city) {
@@ -163,14 +161,6 @@ exports.getAllProperties = getAllProperties;
  * @return {Promise<{}>} A promise to the property.
  */
 const addProperty = function (property) {
-  const propertyId = Object.keys(properties).length + 1;
-  // property.id = propertyId;
-  // properties[propertyId] = property;
-
-  // const temp = [...property];
-  // console.log(temp);
-
-  // return Promise.resolve(property);
   const queryVal = [
     property.owner_id,
     property.title,
