@@ -164,8 +164,34 @@ exports.getAllProperties = getAllProperties;
  */
 const addProperty = function (property) {
   const propertyId = Object.keys(properties).length + 1;
-  property.id = propertyId;
-  properties[propertyId] = property;
-  return Promise.resolve(property);
+  // property.id = propertyId;
+  // properties[propertyId] = property;
+
+  // const temp = [...property];
+  // console.log(temp);
+
+  // return Promise.resolve(property);
+  const queryVal = [
+    property.owner_id,
+    property.title,
+    property.description,
+    property.thumbnail_photo_url,
+    property.cover_photo_url,
+    property.cost_per_night,
+    property.parking_spaces,
+    property.number_of_bathrooms,
+    property.number_of_bedrooms,
+    property.country,
+    property.street,
+    property.city,
+    property.province,
+    property.post_code,
+  ];
+  const queryStr = `INSERT INTO properties (owner_id, title, description, thumbnail_photo_url,cover_photo_url, cost_per_night, parking_spaces, number_of_bathrooms, number_of_bedrooms, country, street, city, province, post_code) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING *`;
+
+  return pool.query(queryStr, queryVal).then((dbRes) => {
+    console.log(dbRes.rows);
+    return dbRes.rows[0];
+  });
 };
 exports.addProperty = addProperty;
