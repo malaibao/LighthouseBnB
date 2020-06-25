@@ -30,6 +30,11 @@ $(() => {
             <div class="property-listing__price">$${
               property.cost_per_night / 100.0
             }/night</div>
+            <div class="reservation-form">
+              <form action="#" method="POST">
+                <button class="" type="submit">Make Reservation!</button>
+              </form>
+            </div>
           </footer>
         </section>
       </article>
