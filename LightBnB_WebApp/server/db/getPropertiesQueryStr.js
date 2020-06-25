@@ -8,7 +8,8 @@ const getPropertiesQueryStr = (options, limit) => {
   // Check if options obj contains city
   if (options.city) {
     queryVal.push(`%${options.city}%`);
-    queryStr += `WHERE city LIKE $${queryVal.length} `;
+    queryStr += `
+    WHERE city LIKE $${queryVal.length} `;
   }
 
   // Check if option obj contains owner_id
